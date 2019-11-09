@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
-import {TouchableWithoutFeedback} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {TouchableWithoutFeedback, PermissionsAndroid} from 'react-native';
 import {Icon} from 'react-native-elements';
 import {Item, Picker, Input, Textarea} from 'native-base';
 import ImagePicker from 'react-native-image-crop-picker';
+import {StackActions} from 'react-navigation';
+import Geolocation from 'react-native-geolocation-service';
 
 import {
   Container,
@@ -39,11 +41,51 @@ export const PickItens = [
   },
 ];
 
-export default function NewRegister() {
+export default function NewRegister({navigation}) {
   const [selected, setSelected] = useState('key0');
   const [otherDescription, setOtherDescription] = useState('');
   const [description, setDescription] = useState('');
   const [imageSource, setImageSource] = useState('');
+  const [hasLocationPermission, setHasLocationPermission] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(false);
+
+  useEffect(() => {
+    const getPermission = async () => {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Permissão de uso do GPS',
+          message:
+            'Para coletarmos a coordenada na qual foto foi ' +
+            'tirada é necessario sua permissão.\n' +
+            'Ela é necessaria para essa coleta de dados.',
+          buttonNeutral: 'Cancelar',
+          buttonPositive: 'OK',
+        },
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        setHasLocationPermission(true);
+        Geolocation.getCurrentPosition(
+          ({coords: {latitude, longitude}}) =>
+            setCurrentLocation({latitude, longitude}),
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      } else {
+        const popAction = StackActions.pop({
+          n: 1,
+        });
+
+        navigation.dispatch(popAction);
+      }
+    };
+
+    getPermission();
+  }, [navigation]);
 
   const canSubmit = () => {
     const hasImage = !!imageSource && !!imageSource.path;
@@ -55,16 +97,30 @@ export default function NewRegister() {
       }
     }
 
-    return hasImage && otherDescr;
+    return hasImage && otherDescr && hasLocationPermission;
   };
 
   const handleSubmit = () => {
+    Geolocation.getCurrentPosition(
+      ({coords: {latitude, longitude}}) =>
+        setCurrentLocation({latitude, longitude}),
+      error => {
+        // See error code charts below.
+        console.log(error.code, error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+
     const info = {
       selected,
       otherDescription,
       description,
       imageSource: imageSource.path,
+      currentLocation,
+      now: Date.now(),
     };
+
+    // TODO sync localy and to API
 
     console.log(info);
   };
