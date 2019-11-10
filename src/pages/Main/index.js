@@ -29,6 +29,9 @@ export default class Main extends React.Component {
   };
 
   componentDidMount = async () => {
+    this.props.navigation.addListener('willFocus', () => {
+      this.handleRefresh();
+    });
     const userId = await AsyncStorage.getItem('@equiteria/userId');
     this.handleRefresh();
     this.setState({userId});
@@ -78,11 +81,12 @@ export default class Main extends React.Component {
           data={spots}
           refreshing={refreshing}
           onRefresh={this.handleRefresh}
-          renderItem={({item: {collect_date, photos, tags, ...rest}}) => (
+          renderItem={({item: {collect_date, photos, tags, location}}) => (
             <ListItem
               title={'oi'}
+              location={location}
               image={Array.from(photos)[0]}
-              labels={tags}
+              label={Array.from(tags)[0]}
               date={collect_date}
             />
           )}

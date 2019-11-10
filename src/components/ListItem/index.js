@@ -14,27 +14,29 @@ import {
   Bottom,
 } from './styles';
 
+import {PickItens} from '~/pages/NewRegister';
+
 import noImage from '~/assets/icons/no-image.png';
 
 export default function CardSingleItem({
   title,
+  location,
   image,
-  labels = [],
+  label = '',
   date,
   synced = false,
 }) {
+  const tagLabel = PickItens.filter(item => item.value === label)[0].tag;
+
   return (
     <Container>
       <ItemImage source={image ? {uri: image} : noImage} />
       <InfoContainer>
         <ItemTitle numberOfLines={1} ellipsizeMode={'tail'}>
-          {title}
+          {`${location.latitude} x ${location.longitude}`}
         </ItemTitle>
         <Bottom>
-          {!!labels &&
-            Array.from(labels).map((label, idx) => (
-              <TagText key={idx}>{label}</TagText>
-            ))}
+          <TagText>{tagLabel}</TagText>
           <TimeText>{moment(date).fromNow()}</TimeText>
         </Bottom>
       </InfoContainer>

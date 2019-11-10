@@ -28,22 +28,27 @@ export const PickItens = [
   {
     label: 'Óleo em praia',
     value: 'oleo-praia',
+    tag: 'óleo em praia',
   },
   {
     label: 'Óleo em rio',
     value: 'oleo-rio',
+    tag: 'óleo em rio',
   },
   {
     label: 'Animais contaminados',
     value: 'animais',
+    tag: 'animal contaminado',
   },
   {
     label: 'Pessoa com sintomas causados pelo óleo',
     value: 'pessoas',
+    tag: 'pessoa com sintoma',
   },
   {
     label: 'Outro',
     value: 'outro',
+    tag: 'outro',
   },
 ];
 
@@ -98,7 +103,7 @@ export default function NewRegister({navigation}) {
   const canSubmit = () => {
     const hasImage = !!imageSource && !!imageSource.path;
     let otherDescr = true;
-    if (selected === 'key4') {
+    if (selected === 'outro') {
       otherDescr = false;
       if (otherDescription.length) {
         otherDescr = true;
@@ -249,7 +254,7 @@ export default function NewRegister({navigation}) {
           </Item>
         </PickerContainer>
       </PictureContainer>
-      {selected === 'key4' && (
+      {selected === 'outro' && (
         <DescriptionContainer>
           <Input
             value={otherDescription}

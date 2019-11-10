@@ -10,7 +10,7 @@ export const ListHeader = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  padding: 30px 0;
 `;
 
 export const ListTitle = styled.Text`

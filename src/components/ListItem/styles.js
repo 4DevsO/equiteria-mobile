@@ -44,5 +44,5 @@ export const TimeText = styled.Text`
 export const ItemTitle = styled.Text`
   flex: 1;
   color: #000;
-  font-size: 20px;
+  font-size: 18px;
 `;
