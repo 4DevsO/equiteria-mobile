@@ -20,10 +20,9 @@ import noImage from '~/assets/icons/no-image.png';
 
 export default function CardSingleItem({
   title,
-  location,
   image,
-  label = '',
   date,
+  label = '',
   synced = false,
 }) {
   const tagLabel = PickItens.filter(item => item.value === label)[0].tag;
@@ -33,7 +32,7 @@ export default function CardSingleItem({
       <ItemImage source={image ? {uri: image} : noImage} />
       <InfoContainer>
         <ItemTitle numberOfLines={1} ellipsizeMode={'tail'}>
-          {`${location.latitude} x ${location.longitude}`}
+          {title}
         </ItemTitle>
         <Bottom>
           <TagText>{tagLabel}</TagText>
