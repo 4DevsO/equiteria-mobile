@@ -3,10 +3,13 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-community/async-storage';
 import auth from '@react-native-firebase/auth';
 import VMasker from 'vanilla-masker';
+import uuid from 'uuid';
 
 import {Container, AppName, Text, BoldText, TextInput, Icon} from '../styles';
 
 import Button from '~/components/Button';
+
+import api from '~/services/api';
 
 export default function AddPhoneNumber({key, navigation}) {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -18,12 +21,27 @@ export default function AddPhoneNumber({key, navigation}) {
 
   const telMask = '(99) 9 9999-9999';
 
-  const saveAuth = async ({id}) => {
+  const createUser = async () => {
     try {
-      await AsyncStorage.setItem('@equiteria/userAuth', id);
-      await AsyncStorage.setItem('@equiteria/userPhone', phoneNumber);
+      const userId = uuid.v4();
+
+      const userData = {
+        user_id: userId,
+        phone_number: `+55${phoneNumber.replace(/[()\-\s]/gi, '')}`,
+      };
+
+      console.log(userData);
+
+      // const response = await api.post('/user', userData);
+
+      // console.log('response', response.data);
+
+      await AsyncStorage.setItem('@equiteria/userId', userId);
+      setLoading(false);
+      navigation.navigate('Main', {userId});
     } catch (err) {
-      console.log(err);
+      setLoading(false);
+      console.log('error', err);
     }
   };
 
@@ -55,9 +73,7 @@ export default function AddPhoneNumber({key, navigation}) {
       case auth.PhoneAuthState.AUTO_VERIFIED: // or 'verified'
         console.log('auto verified on android');
         console.log(phoneAuthSnapshot);
-        saveAuth({id: phoneAuthSnapshot.verificationId});
-        setLoading(false);
-        navigation.navigate('Main');
+        createUser();
         break;
     }
   };
@@ -68,11 +84,12 @@ export default function AddPhoneNumber({key, navigation}) {
     setError(false);
 
     try {
-      if (!phoneNumber.length) {
+      const fixedNumber = `+55${phoneNumber.replace(/[()\-\s]/gi, '')}`;
+      if (fixedNumber.length !== 14) {
         throw new Error('Informe um número de telefone válido');
       }
       await auth()
-        .verifyPhoneNumber(`+55${phoneNumber}`)
+        .verifyPhoneNumber(fixedNumber)
         .on('state_changed', phoneStateCb);
     } catch (err) {
       if (
@@ -97,9 +114,7 @@ export default function AddPhoneNumber({key, navigation}) {
           code,
         );
         await auth().signInWithCredential(credential);
-        saveAuth({id: verificationId});
-        setLoading(false);
-        navigation.navigate('Main');
+        createUser();
       } catch (err) {
         setLoading(false);
         setError(true);

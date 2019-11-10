@@ -13,13 +13,12 @@ export default function Welcome({navigation}) {
   useEffect(() => {
     if (firstRun) {
       const getUser = async () => {
-        const user = await AsyncStorage.getItem('@equiteria/userAuth');
-
-        if (user !== null) {
+        const userId = await AsyncStorage.getItem('@equiteria/userId');
+        if (userId !== null) {
           navigation.navigate('Main');
         }
 
-        return user;
+        return userId;
       };
 
       getUser();

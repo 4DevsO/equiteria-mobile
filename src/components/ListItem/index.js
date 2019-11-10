@@ -19,7 +19,7 @@ import noImage from '~/assets/icons/no-image.png';
 export default function CardSingleItem({
   title,
   image,
-  labels,
+  labels = [],
   date,
   synced = false,
 }) {
@@ -31,9 +31,10 @@ export default function CardSingleItem({
           {title}
         </ItemTitle>
         <Bottom>
-          {labels.map((label, idx) => (
-            <TagText key={idx}>{label}</TagText>
-          ))}
+          {!!labels &&
+            Array.from(labels).map((label, idx) => (
+              <TagText key={idx}>{label}</TagText>
+            ))}
           <TimeText>{moment(date).fromNow()}</TimeText>
         </Bottom>
       </InfoContainer>
