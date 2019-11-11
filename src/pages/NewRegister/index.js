@@ -236,7 +236,7 @@ export default function NewRegister({navigation}) {
             size={60}
             color="#999"
             onPress={handleImagePicker}
-            style={{backgroundColor: '#eee', borderRadius: 4}}
+            style={{backgroundColor: '#eee', borderRadius: 4, padding: 20}}
           />
         )}
         <PickerContainer>

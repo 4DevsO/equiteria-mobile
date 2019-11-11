@@ -22,26 +22,38 @@ export default function AddPhoneNumber({key, navigation}) {
   const telMask = '(99) 9 9999-9999';
 
   const createUser = async () => {
+    const userData = {
+      phone_number: `+55${phoneNumber.replace(/[()\-\s]/gi, '')}`,
+    };
+
     try {
-      const userId = uuid.v4();
+      const response = await api.post('/user', userData);
 
-      const userData = {
-        user_id: userId,
-        phone_number: `+55${phoneNumber.replace(/[()\-\s]/gi, '')}`,
-      };
+      const {
+        data: {_id},
+      } = response.data;
 
-      console.log(userData);
-
-      // const response = await api.post('/user', userData);
-
-      // console.log('response', response.data);
-
-      await AsyncStorage.setItem('@equiteria/userId', userId);
+      await AsyncStorage.setItem('@equiteria/userId', _id);
       setLoading(false);
-      navigation.navigate('Main', {userId});
+      navigation.navigate('Main', {userId: _id});
     } catch (err) {
-      setLoading(false);
-      console.log('error', err);
+      if (err.response) {
+        console.log(err.response.data);
+        if (err.response.data.success === false) {
+          const response = await api.get('/user');
+          const {data} = response.data;
+          const {_id} = data.filter(
+            user => user.phone_number === userData.phone_number,
+          )[0];
+          await AsyncStorage.setItem('@equiteria/userId', _id);
+          setLoading(false);
+          navigation.navigate('Main', {userId: _id});
+        } else {
+          setLoading(false);
+        }
+      } else {
+        console.log('error', err);
+      }
     }
   };
 

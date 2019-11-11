@@ -5,6 +5,7 @@ import PointSchema from '~/schemas/PointSchema';
 
 export default function getRealm() {
   return Realm.open({
+    path: 'equiteriarealm',
     schema: [OilSpotSchema, PointSchema],
   });
 }

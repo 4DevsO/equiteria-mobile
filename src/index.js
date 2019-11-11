@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import Orientation from 'react-native-orientation-locker';
+
 import moment from 'moment';
 import 'moment/locale/pt-br';
 moment.locale('pt-br');
