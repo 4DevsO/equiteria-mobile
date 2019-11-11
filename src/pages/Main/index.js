@@ -35,8 +35,8 @@ export default class Main extends React.Component {
       this.handleRefresh();
     });
     const userId = await AsyncStorage.getItem('@equiteria/userId');
-    this.handleRefresh();
     this.setState({userId});
+    this.handleRefresh();
   };
 
   handleRefresh = async () => {
