@@ -25,17 +25,15 @@ export default class Main extends React.Component {
   static navigationOptions = {header: null};
 
   state = {
-    userId: '',
     spots: [],
     refreshing: false,
+    syncing: 0,
   };
 
   componentDidMount = async () => {
     this.props.navigation.addListener('willFocus', () => {
       this.handleRefresh();
     });
-    const userId = await AsyncStorage.getItem('@equiteria/userId');
-    this.setState({userId});
     this.handleRefresh();
   };
 
@@ -50,7 +48,14 @@ export default class Main extends React.Component {
       }
     });
     this.setState({spots, refreshing: false});
-    syncData(data2sync);
+
+    if (data2sync.length) {
+      // syncData(data2sync, this.state.syncing, state =>
+      //   this.setState({
+      //     syncing: state,
+      //   }),
+      // );
+    }
   };
 
   handleLogout = () => {
@@ -70,9 +75,31 @@ export default class Main extends React.Component {
     );
   };
 
+  handleItemDelete = id => {
+    Alert.alert(
+      'Apagar Registro',
+      'Você irá apagar o registro do e-quitéria',
+      [
+        {text: 'Cancelar', style: 'cancel'},
+        {
+          text: 'Apagar',
+          onPress: async () => {
+            const realm = await getRealm();
+            realm.write(() => {
+              const spot = realm.objectForPrimaryKey('OilSpot', id);
+              realm.delete(spot);
+            });
+            this.handleRefresh();
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
   render() {
     const {navigation} = this.props;
-    const {spots, userId, refreshing} = this.state;
+    const {spots, refreshing} = this.state;
 
     return (
       <Container>
@@ -86,12 +113,12 @@ export default class Main extends React.Component {
         </HeaderContainer>
         <List
           title="Seus registros"
-          onAdd={() => navigation.navigate('NewRegister', {userId})}
+          onAdd={() => navigation.navigate('NewRegister')}
           data={spots}
           refreshing={refreshing}
           onRefresh={this.handleRefresh}
           renderItem={({
-            item: {collect_date, photos, tags, location, synced},
+            item: {collect_date, photos, tags, location, synced, id},
           }) => (
             <ListItem
               title={`${location.latitude} x ${location.longitude}`}
@@ -100,6 +127,7 @@ export default class Main extends React.Component {
               label={Array.from(tags)[0]}
               date={collect_date}
               synced={synced}
+              onLongPress={() => this.handleItemDelete(id)}
             />
           )}
         />

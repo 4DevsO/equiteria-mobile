@@ -6,10 +6,12 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {StackActions} from 'react-navigation';
 import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-community/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 import RNFS from 'react-native-fs';
 import uuid from 'uuid';
 
 import getRealm from '~/services/realm';
+import api from '~/services/api';
 const Secrets = require('~/services/secrets.json');
 
 import {
@@ -23,6 +25,7 @@ import {
 
 import IconButton from '~/components/IconButton';
 import Button from '~/components/Button';
+import {createFile, createPath} from '~/components/FileHandler';
 
 export const PickItens = [
   {
@@ -165,45 +168,135 @@ export default function NewRegister({navigation}) {
         collect_date: new Date(infos.collectDate),
         location: infos.location,
         tags: [infos.tag],
-        photos: [`data:${infos.photo.mime};base64,${infos.photo.data}`],
+        description: infos.description,
+        other_description: infos.otherDescription,
+        photos: [
+          {
+            data: infos.photo.data,
+            synced: false,
+          },
+        ],
       };
 
-      console.log({...data, photos: []});
       const realm = await getRealm();
-      realm.write(() => {
+      realm.write(async () => {
         realm.create('OilSpot', data);
+        const {isConnected} = await NetInfo.fetch();
+        if (isConnected) {
+          console.log(`<syncing> ${data.id}`);
+          api
+            .post('/oilSpot', {
+              ...data,
+              spot_id: data.id,
+              id: undefined,
+              photos: undefined,
+            })
+            .then(response => {
+              if (response.data.success) {
+                realm.write(() => {
+                  const localSpot = realm.objectForPrimaryKey(
+                    'OilSpot',
+                    data.id,
+                  );
+                  localSpot.synced = true;
+                  console.log(`<synced> ${data.id}`);
+                  imageUploadHandler({
+                    spotId: data.id,
+                    image: infos.photo,
+                  });
+                });
+              }
+            })
+            .catch(err => {
+              if (err.response) {
+                console.info('<failed to sync>', data.id, err.response.data);
+              } else {
+                console.info('<error>', err.message);
+              }
+            });
+        }
       });
     } catch (err) {
       throw new Error(err);
     }
   };
 
-  const imageUploadHandler = async imageData => {
-    // const imageData = `data:${image.mime};base64,${image.data}`;
-    const imagePath = `${RNFS.DocumentDirectoryPath}/${uuid.v4()}.jpg`;
+  const imageUploadHandler = async ({spotId, image}) => {
+    const filename = uuid.v4() + '.jpg';
+    const imagePath = `${RNFS.DocumentDirectoryPath}/${filename}`;
     const {baseURL, apikey} = Secrets;
-    const imageUploadEP = `${baseURL}/oilSpotPhoto`;
+    await RNFS.writeFile(imagePath, image.data, 'base64').catch(err => {
+      console.log(`<error creating image file> ${err.message}`);
+    });
 
-    await RNFS.writeFile(imagePath, imageData, 'base-64');
-    const files = [imagePath];
+    const file = {
+      name: 'img',
+      filename: imagePath,
+      filepath: imagePath,
+      filetype: 'image/jpeg',
+    };
 
-    const response = await RNFS.uploadFiles({
-      toUrl: imageUploadEP,
-      files,
+    console.log(`<uploading images> ${spotId}`);
+    RNFS.uploadFiles({
+      toUrl: `${baseURL}/oilSpotPhoto`,
+      files: [file],
       method: 'POST',
       headers: {
         apikey,
       },
-    }).promise;
-
-    if (response.statusCode === 200) {
-      // Foto teve upload
-      console.log(response.body);
-    } else {
-      // Erro no upload
-    }
-
-    await RNFS.unlink(imagePath);
+    })
+      .promise.then(response => {
+        if (response.statusCode === 200) {
+          console.log(`<uploaded images> ${spotId}`, response.body);
+          console.log(`<updating spot image data> ${spotId}`);
+          api
+            .put(`/oilSpot/${spotId}`, {
+              photos: JSON.parse(response.body).data,
+            })
+            .then(putResponse => {
+              if (putResponse.data.success) {
+                console.log(`<updating spot image data locally> ${spotId}`);
+                getRealm()
+                  .then(realm => {
+                    realm.write(() => {
+                      const foundSpot = realm.objectForPrimaryKey(
+                        'OilSpot',
+                        spotId,
+                      );
+                      const syncedPhotos = foundSpot.photos.map(photo => ({
+                        ...photo,
+                        synced: true,
+                      }));
+                      foundSpot.photos = syncedPhotos;
+                      console.log(`<updated spot image data> ${spotId}`);
+                      RNFS.unlink(imagePath);
+                    });
+                  })
+                  .catch(err => {
+                    console.info('<error>', err.message);
+                  });
+              }
+            })
+            .catch(err => {
+              if (err.response) {
+                console.info(
+                  '<failed to update spot image data>',
+                  spotId,
+                  err.response.data,
+                );
+              } else {
+                console.info('<error>', err.message);
+              }
+            });
+        }
+      })
+      .catch(err => {
+        if (err.response) {
+          console.info('<failed to upload image>', spotId, err.response.data);
+        } else {
+          console.info('<error>', err, err.message);
+        }
+      });
   };
 
   const handleImagePicker = () => {

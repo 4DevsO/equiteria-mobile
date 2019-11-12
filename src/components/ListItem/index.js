@@ -24,12 +24,20 @@ export default function CardSingleItem({
   date,
   label = '',
   synced = false,
+  onLongPress,
+  onPress,
 }) {
   const tagLabel = PickItens.filter(item => item.value === label)[0].tag;
 
   return (
-    <Container>
-      <ItemImage source={image ? {uri: image} : noImage} />
+    <Container onPress={onPress} onLongPress={onLongPress}>
+      <ItemImage
+        source={
+          image && image.data
+            ? {uri: `data:image/jpeg;base64,${image.data}`}
+            : noImage
+        }
+      />
       <InfoContainer>
         <ItemTitle numberOfLines={1} ellipsizeMode={'tail'}>
           {title}
@@ -43,7 +51,8 @@ export default function CardSingleItem({
         <Icon
           color="#ff0000"
           size={25}
-          name="sync"
+          type="font-awesome"
+          name="chain-broken"
           Component={TouchableWithoutFeedback}
           onPress={() =>
             Toast.show(
