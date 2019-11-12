@@ -25,7 +25,6 @@ import {
 
 import IconButton from '~/components/IconButton';
 import Button from '~/components/Button';
-import {createFile, createPath} from '~/components/FileHandler';
 
 export const PickItens = [
   {
