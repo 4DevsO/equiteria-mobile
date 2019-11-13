@@ -37,66 +37,101 @@ const App = () => {
         if (isConnected) {
           const realm = await getRealm();
           const toSync = realm.objects('SyncSchedule');
-          console.log('<objects2sync>', toSync);
 
-          toSync.map(spot2sync => {
-            console.log(`<syncing> ${spot2sync.spot_id}`);
+          if (toSync.length) {
+            toSync.map(spot2sync => {
+              console.log(`<syncing> ${spot2sync.spot_id}`);
 
-            const spot = realm.objectForPrimaryKey(
-              'OilSpot',
-              spot2sync.spot_id,
-            );
+              const spot = realm.objectForPrimaryKey(
+                'OilSpot',
+                spot2sync.spot_id,
+              );
 
-            if (spot) {
-              const data = {
-                ...spot,
-                tags: Array.from(spot.tags),
-                spot_id: spot.id,
-                id: undefined,
-                photos: undefined,
-              };
-              api
-                .post('/oilSpot', data)
-                .then(response => {
-                  if (response.data.success) {
-                    realm.write(async () => {
-                      const localSpot = realm.objectForPrimaryKey(
-                        'OilSpot',
-                        spot.id,
-                      );
-                      localSpot.synced = true;
-                      console.log(`<synced> ${spot.id}`);
-                      await imageUploadHandler({
-                        spotId: spot.id,
-                        images: spot.photos,
+              if (spot) {
+                const data = {
+                  ...spot,
+                  tags: Array.from(spot.tags),
+                  spot_id: spot.id,
+                  id: undefined,
+                  photos: undefined,
+                };
+                api
+                  .post('/oilSpot', data)
+                  .then(response => {
+                    if (response.data.success) {
+                      realm.write(async () => {
+                        const localSpot = realm.objectForPrimaryKey(
+                          'OilSpot',
+                          spot.id,
+                        );
+                        localSpot.synced = true;
+                        console.log(`<synced> ${spot.id}`);
+                        await imageUploadHandler({
+                          spotId: spot.id,
+                          images: spot.photos,
+                        });
+                        const syncedSpot = realm.objectForPrimaryKey(
+                          'SyncSchedule',
+                          spot.id,
+                        );
+                        realm.write(() => {
+                          realm.delete(syncedSpot);
+                        });
                       });
-                      const syncedSpot = realm.objectForPrimaryKey(
-                        'SyncSchedule',
-                        spot.id,
-                      );
-                      realm.write(() => {
-                        realm.delete(syncedSpot);
-                      });
-                    });
-                  }
-                })
-                .catch(err => {
-                  if (err.response) {
-                    console.log('<failed to sync>', err.response.data);
-                  } else {
-                    console.log('<error>', err);
-                  }
+                    }
+                  })
+                  .catch(err => {
+                    if (err.response) {
+                      console.log('<failed to sync>', err.response.data);
+                    } else {
+                      console.log('<error>', err);
+                    }
+                  });
+              } else {
+                realm.write(() => {
+                  const a2delete = realm.objectForPrimaryKey(
+                    'SyncSchedule',
+                    spot2sync.spot_id,
+                  );
+                  realm.delete(a2delete);
                 });
-            } else {
-              realm.write(() => {
-                const a2delete = realm.objectForPrimaryKey(
-                  'SyncSchedule',
-                  spot2sync.spot_id,
+              }
+            });
+          } else {
+            const toSyncImg = realm.objects('SyncScheduleImages');
+            if (toSyncImg.length) {
+              toSyncImg.map(async image2sync => {
+                console.log(`<syncing images> ${image2sync.spot_id}`);
+
+                const spot = realm.objectForPrimaryKey(
+                  'OilSpot',
+                  image2sync.spot_id,
                 );
-                realm.delete(a2delete);
+
+                if (spot) {
+                  await imageUploadHandler({
+                    spotId: spot.id,
+                    images: spot.photos,
+                  });
+                  const syncedSpot = realm.objectForPrimaryKey(
+                    'SyncScheduleImage',
+                    spot.id,
+                  );
+                  realm.write(() => {
+                    realm.delete(syncedSpot);
+                  });
+                } else {
+                  realm.write(() => {
+                    const a2delete = realm.objectForPrimaryKey(
+                      'SyncSchedule',
+                      image2sync.spot_id,
+                    );
+                    realm.delete(a2delete);
+                  });
+                }
               });
             }
-          });
+          }
         } else {
           Toast.show(
             'Você está sem internet no momento.' +

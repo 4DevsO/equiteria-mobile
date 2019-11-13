@@ -438,6 +438,16 @@ export const imageUploadHandler = async ({spotId, images = []}) => {
                 spotId,
                 err.response.data,
               );
+              getRealm()
+                .then(realm => {
+                  realm.write(() => {
+                    realm.create('SyncScheduleImages', {
+                      spot_id: spotId,
+                      created_at: new Date(),
+                    });
+                  });
+                })
+                .catch(realmErr => console.log('<error>', realmErr));
             } else {
               console.info('<error>', err.message);
             }
