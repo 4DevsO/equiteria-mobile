@@ -73,12 +73,6 @@ export default function NewRegister({navigation}) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    Geocoder.from(41.89, 12.49)
-      .then(json => {
-        var addressComponent = json.results[0].address_components[0];
-        console.log(addressComponent);
-      })
-      .catch(error => console.warn(error));
     const getPermission = async () => {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
