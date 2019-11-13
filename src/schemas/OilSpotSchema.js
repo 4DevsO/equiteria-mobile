@@ -7,6 +7,7 @@ export default class OilSpotSchema {
       user_id: {type: 'string?'},
       collect_date: {type: 'date?'},
       location: {type: 'Point'},
+      location_name: {type: 'string?'},
       tags: {type: 'string[]'},
       description: {type: 'string?'},
       other_description: {type: 'string?'},

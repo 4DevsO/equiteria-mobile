@@ -9,6 +9,6 @@ export default function getRealm() {
   return Realm.open({
     path: 'equiteriarealm',
     schema: [OilSpotSchema, PointSchema, PhotoSchema, SyncSchedule],
-    schemaVersion: 4,
+    schemaVersion: 5,
   });
 }
