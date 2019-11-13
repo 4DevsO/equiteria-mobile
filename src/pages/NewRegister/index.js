@@ -14,6 +14,7 @@ import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import RNFS from 'react-native-fs';
+import Toast from 'react-native-simple-toast';
 import uuid from 'uuid';
 import moment from 'moment';
 
@@ -275,6 +276,10 @@ export default function NewRegister({navigation}) {
       .catch(e => console.log(e));
   };
 
+  const toastElementNotEditable = () => {
+    Toast.show('Esse item não é editavél.', Toast.SHORT);
+  };
+
   return (
     <Container>
       <PictureContainer>
@@ -328,18 +333,22 @@ export default function NewRegister({navigation}) {
           placeholder="Se possível descreva mais detalhes do problema"
         />
       </DescriptionContainer>
-      <DescriptionContainer>
-        <View>
-          <Text style={{fontWeight: 'bold'}}>Data</Text>
-          <Text>{moment().format('DD/MM/YYYY')}</Text>
-        </View>
-      </DescriptionContainer>
-      <DescriptionContainer>
-        <View>
-          <Text style={{fontWeight: 'bold'}}>Localização</Text>
-          <Text>{locationName}</Text>
-        </View>
-      </DescriptionContainer>
+      <TouchableWithoutFeedback onPress={toastElementNotEditable}>
+        <DescriptionContainer>
+          <View>
+            <Text style={{fontWeight: 'bold'}}>Data</Text>
+            <Text>{moment().format('DD/MM/YYYY')}</Text>
+          </View>
+        </DescriptionContainer>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={toastElementNotEditable}>
+        <DescriptionContainer>
+          <View>
+            <Text style={{fontWeight: 'bold'}}>Localização</Text>
+            <Text>{locationName}</Text>
+          </View>
+        </DescriptionContainer>
+      </TouchableWithoutFeedback>
       <Button
         loading={loading}
         disabled={!canSubmit()}
