@@ -213,6 +213,11 @@ export default function NewRegister({navigation}) {
                 console.info('<error>', err.message);
               }
             });
+        } else {
+          realm.create('SyncSchedule', {
+            spot_id: data.id,
+            created_at: new Date(),
+          });
         }
       });
     } catch (err) {
