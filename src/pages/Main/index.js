@@ -126,10 +126,18 @@ export default class Main extends React.Component {
           refreshing={refreshing}
           onRefresh={this.handleRefresh}
           renderItem={({
-            item: {collect_date, photos, tags, location, synced, id},
+            item: {
+              collect_date,
+              photos,
+              tags,
+              location,
+              location_name,
+              synced,
+              id,
+            },
           }) => (
             <ListItem
-              title={`${location.latitude} x ${location.longitude}`}
+              title={location_name}
               location={location}
               image={Array.from(photos)[0]}
               label={Array.from(tags)[0]}

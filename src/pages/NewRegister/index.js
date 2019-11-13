@@ -196,6 +196,7 @@ export default function NewRegister({navigation}) {
         user_id: infos.userId,
         collect_date: new Date(infos.collectDate),
         location: infos.location,
+        location_name: locationName,
         tags: [infos.tag],
         description: infos.description,
         other_description: infos.otherDescription,
@@ -217,6 +218,7 @@ export default function NewRegister({navigation}) {
             .post('/oilSpot', {
               ...data,
               spot_id: data.id,
+              location_name: undefined,
               id: undefined,
               photos: undefined,
             })

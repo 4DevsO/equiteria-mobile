@@ -23,7 +23,7 @@ export const reverseGeoLocation = async ({latitude, longitude}) => {
       }
       return responseMaps.data.results[0].formatted_address;
     } catch (e) {
-      console.error(e);
+      console.log('<error>', e);
       return `${latitude} x ${longitude}`;
     }
   }
