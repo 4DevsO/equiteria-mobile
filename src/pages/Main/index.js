@@ -84,11 +84,19 @@ export default class Main extends React.Component {
         {
           text: 'Apagar',
           onPress: async () => {
-            const realm = await getRealm();
-            realm.write(() => {
-              const spot = realm.objectForPrimaryKey('OilSpot', id);
-              realm.delete(spot);
-            });
+            try {
+              const realm = await getRealm();
+              realm.write(() => {
+                const spot = realm.objectForPrimaryKey('OilSpot', id);
+                realm.delete(spot);
+                const spot2sync = realm.objectForPrimaryKey('SyncSchedule', id);
+                if (spot2sync) {
+                  realm.delete(spot2sync);
+                }
+              });
+            } catch (err) {
+              console.log('<error>', err);
+            }
             this.handleRefresh();
           },
         },

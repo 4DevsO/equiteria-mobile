@@ -32,6 +32,7 @@ export default function CardSingleItem({
   return (
     <Container onPress={onPress} onLongPress={onLongPress}>
       <ItemImage
+        synced={image && image.synced}
         source={
           image && image.data
             ? {uri: `data:image/jpeg;base64,${image.data}`}
