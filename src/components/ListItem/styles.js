@@ -15,6 +15,7 @@ export const ItemImage = styled.Image`
   width: 60px;
   border-radius: 4px;
   border-width: 2px;
+  border-color: ${({synced}) => (synced ? '#0d9c60' : '#ff0000')};
 `;
 
 export const InfoContainer = styled.View`
