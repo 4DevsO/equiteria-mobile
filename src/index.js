@@ -1,6 +1,8 @@
 import React, {useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import Orientation from 'react-native-orientation-locker';
+import {GoogleSignin} from 'react-native-google-signin';
+const {webClientId} = require('~/services/secrets.json');
 
 import moment from 'moment';
 import 'moment/locale/pt-br';
@@ -13,6 +15,13 @@ import Routes from '~/routes';
 const App = () => {
   useEffect(() => {
     Orientation.lockToPortrait();
+    const googleBootstrap = async () => {
+      await GoogleSignin.configure({
+        scopes: [],
+        webClientId,
+      });
+    };
+    googleBootstrap();
   }, []);
 
   return (
