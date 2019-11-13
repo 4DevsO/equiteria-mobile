@@ -230,7 +230,7 @@ export default function NewRegister({navigation}) {
                   console.log(`<synced> ${data.id}`);
                   imageUploadHandler({
                     spotId: data.id,
-                    image: data.photos,
+                    images: data.photos,
                   });
                 });
               }
@@ -243,10 +243,16 @@ export default function NewRegister({navigation}) {
               }
             });
         } else {
-          realm.create('SyncSchedule', {
-            spot_id: data.id,
-            created_at: new Date(),
-          });
+          try {
+            realm.write(() => {
+              realm.create('SyncSchedule', {
+                spot_id: data.id,
+                created_at: new Date(),
+              });
+            });
+          } catch (err) {
+            console.log('<error>', err);
+          }
         }
       });
     } catch (err) {
@@ -353,7 +359,7 @@ export const imageUploadHandler = async ({spotId, images = []}) => {
   const {baseURL, apikey} = Secrets;
 
   await Promise.all(
-    images.map(async image => {
+    await images.map(async image => {
       const filename = uuid.v4() + '.jpg';
       const imagePath = `${RNFS.DocumentDirectoryPath}/${filename}`;
       await RNFS.writeFile(imagePath, image.data, 'base64').catch(err => {
