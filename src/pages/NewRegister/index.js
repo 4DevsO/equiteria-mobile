@@ -16,10 +16,9 @@ import NetInfo from '@react-native-community/netinfo';
 import RNFS from 'react-native-fs';
 import uuid from 'uuid';
 import moment from 'moment';
-import Geocoder from 'react-native-geocoding';
 
 import getRealm from '~/services/realm';
-import api from '~/services/api';
+import api, {reverseGeoLocation} from '~/services/api';
 const Secrets = require('~/services/secrets.json');
 
 import {
@@ -69,6 +68,7 @@ export default function NewRegister({navigation}) {
   const [imageSource, setImageSource] = useState('');
   const [hasLocationPermission, setHasLocationPermission] = useState(true);
   const [currentLocation, setCurrentLocation] = useState(false);
+  const [locationName, setLocationName] = useState('');
 
   const [loading, setLoading] = useState(false);
 
@@ -104,16 +104,8 @@ export default function NewRegister({navigation}) {
       }
     };
 
-    const checkLocationStatus = async () => {
-      console.log('<currentLocation>', currentLocation);
-      if (!currentLocation) {
-        setHasLocationPermission(false);
-      }
-    };
-
     getPermission();
-    // checkLocationStatus();
-  }, [currentLocation, navigation]);
+  }, [navigation]);
 
   useEffect(() => {
     if (!hasLocationPermission) {
@@ -131,6 +123,14 @@ export default function NewRegister({navigation}) {
     }
   }, [hasLocationPermission, navigation]);
 
+  useEffect(() => {
+    const getLocationName = async () => {
+      const locationName = await reverseGeoLocation(currentLocation);
+      setLocationName(locationName);
+    };
+    getLocationName();
+  }, [currentLocation]);
+
   const canSubmit = () => {
     const hasImage = !!imageSource && !!imageSource.path;
     let otherDescr = true;
@@ -146,6 +146,7 @@ export default function NewRegister({navigation}) {
 
   const handleSubmit = async () => {
     setLoading(true);
+
     try {
       const location = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
@@ -400,10 +401,8 @@ export default function NewRegister({navigation}) {
       </DescriptionContainer>
       <DescriptionContainer>
         <View>
-          <Text style={{fontWeight: 'bold'}}>Latitude e Longitude</Text>
-          <Text>
-            {currentLocation.latitude} x {currentLocation.longitude}
-          </Text>
+          <Text style={{fontWeight: 'bold'}}>Localização</Text>
+          <Text>{locationName}</Text>
         </View>
       </DescriptionContainer>
       <Button
