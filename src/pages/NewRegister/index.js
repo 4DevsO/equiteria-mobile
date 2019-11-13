@@ -125,8 +125,8 @@ export default function NewRegister({navigation}) {
 
   useEffect(() => {
     const getLocationName = async () => {
-      const locationName = await reverseGeoLocation(currentLocation);
-      setLocationName(locationName);
+      const reverseLocationName = await reverseGeoLocation(currentLocation);
+      setLocationName(reverseLocationName);
     };
     getLocationName();
   }, [currentLocation]);

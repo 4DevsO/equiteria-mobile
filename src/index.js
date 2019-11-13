@@ -17,7 +17,7 @@ import '~/config/ReactotronConfig';
 import Routes from '~/routes';
 
 import getRealm from '~/services/realm';
-import api from '~/services/api';
+import api, {reverseGeoLocation} from '~/services/api';
 import {imageUploadHandler} from '~/pages/NewRegister';
 
 const App = () => {
@@ -64,7 +64,20 @@ const App = () => {
                           'OilSpot',
                           spot.id,
                         );
-                        localSpot.synced = true;
+
+                        const reverseLocationName = await reverseGeoLocation(
+                          localSpot.location,
+                        ).catch(geoErr => console.log('<error>', geoErr));
+                        console.log(
+                          '<locationName>',
+                          localSpot.location_name,
+                          '\n<reverseGeoName>',
+                          reverseLocationName,
+                        );
+                        realm.write(() => {
+                          localSpot.location_name = reverseLocationName;
+                          localSpot.synced = true;
+                        });
                         console.log(`<synced> ${spot.id}`);
                         await imageUploadHandler({
                           spotId: spot.id,
