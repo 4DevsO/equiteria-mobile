@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {TouchableWithoutFeedback, PermissionsAndroid} from 'react-native';
+import {
+  TouchableWithoutFeedback,
+  PermissionsAndroid,
+  Text,
+  View,
+  Alert,
+} from 'react-native';
 import {Icon} from 'react-native-elements';
 import {Item, Picker, Input, Textarea} from 'native-base';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -9,6 +15,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import RNFS from 'react-native-fs';
 import uuid from 'uuid';
+import moment from 'moment';
+import Geocoder from 'react-native-geocoding';
 
 import getRealm from '~/services/realm';
 import api from '~/services/api';
@@ -59,7 +67,7 @@ export default function NewRegister({navigation}) {
   const [otherDescription, setOtherDescription] = useState('');
   const [description, setDescription] = useState('');
   const [imageSource, setImageSource] = useState('');
-  const [hasLocationPermission, setHasLocationPermission] = useState(false);
+  const [hasLocationPermission, setHasLocationPermission] = useState(true);
   const [currentLocation, setCurrentLocation] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -87,20 +95,41 @@ export default function NewRegister({navigation}) {
           error => {
             // See error code charts below.
             console.log(error.code, error.message);
+            setHasLocationPermission(false);
           },
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
       } else {
-        const popAction = StackActions.pop({
-          n: 1,
-        });
+        setHasLocationPermission(false);
+      }
+    };
 
-        navigation.dispatch(popAction);
+    const checkLocationStatus = async () => {
+      console.log('<currentLocation>', currentLocation);
+      if (!currentLocation) {
+        setHasLocationPermission(false);
       }
     };
 
     getPermission();
-  }, [navigation]);
+    // checkLocationStatus();
+  }, [currentLocation, navigation]);
+
+  useEffect(() => {
+    if (!hasLocationPermission) {
+      Alert.alert(
+        'Sua localização está desligada',
+        'Para enviar um registro você deve ativar a localização do seu dispositivo e tentar novamente',
+        [{text: 'OK'}],
+        {cancelable: false},
+      );
+      const popAction = StackActions.pop({
+        n: 1,
+      });
+
+      navigation.dispatch(popAction);
+    }
+  }, [hasLocationPermission, navigation]);
 
   const canSubmit = () => {
     const hasImage = !!imageSource && !!imageSource.path;
@@ -289,6 +318,20 @@ export default function NewRegister({navigation}) {
           onChangeText={setDescription}
           placeholder="Se possível descreva mais detalhes do problema"
         />
+      </DescriptionContainer>
+      <DescriptionContainer>
+        <View>
+          <Text style={{fontWeight: 'bold'}}>Data</Text>
+          <Text>{moment().format('DD/MM/YYYY')}</Text>
+        </View>
+      </DescriptionContainer>
+      <DescriptionContainer>
+        <View>
+          <Text style={{fontWeight: 'bold'}}>Latitude e Longitude</Text>
+          <Text>
+            {currentLocation.latitude} x {currentLocation.longitude}
+          </Text>
+        </View>
       </DescriptionContainer>
       <Button
         loading={loading}

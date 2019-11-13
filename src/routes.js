@@ -2,11 +2,12 @@ import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
 import Welcome from '~/pages/Welcome';
+import About from '~/pages/About';
 import Main from '~/pages/Main';
 import NewRegister from '~/pages/NewRegister';
 
 const MainRoutes = createStackNavigator(
-  {Main, NewRegister},
+  {Main, NewRegister, About},
   {
     headerLayoutPreset: 'left',
     headerBackTitleVisible: false,
