@@ -175,8 +175,6 @@ export default function NewRegister({navigation}) {
         userId,
       };
 
-      // TODO sync localy and to API
-
       await saveUserInfo(info);
       setLoading(false);
       const popAction = StackActions.pop({
@@ -249,10 +247,14 @@ export default function NewRegister({navigation}) {
         } else {
           try {
             realm.write(() => {
-              realm.create('SyncSchedule', {
-                spot_id: data.id,
-                created_at: new Date(),
-              });
+              realm.create(
+                'SyncSchedule',
+                {
+                  spot_id: data.id,
+                  created_at: new Date(),
+                },
+                true,
+              );
             });
           } catch (err) {
             console.log('<error>', err);
@@ -368,35 +370,39 @@ var uploadProgress = response => {
   var percentage = Math.floor(
     (response.totalBytesSent / response.totalBytesExpectedToSend) * 100,
   );
-  console.log('<uploading image> ' + percentage + '% done...');
+  // console.log('<uploading image> ' + percentage + '% done...');
 };
 
 export const imageUploadHandler = async ({spotId, images = []}) => {
   const files = [];
   const {baseURL, apikey} = Secrets;
 
-  await Promise.all(
-    await images.map(async image => {
-      const filename = uuid.v4() + '.jpg';
-      const imagePath = `${RNFS.DocumentDirectoryPath}/${filename}`;
-      await RNFS.writeFile(imagePath, image.data, 'base64').catch(err => {
-        console.log(`<error creating image file> ${err.message}`);
-      });
+  try {
+    await Promise.all(
+      await images.map(async image => {
+        const filename = uuid.v4() + '.jpg';
+        const imagePath = `${RNFS.DocumentDirectoryPath}/${filename}`;
+        await RNFS.writeFile(imagePath, image.data, 'base64').catch(err => {
+          console.log(`<error creating image file> ${err.message}`);
+        });
 
-      const file = {
-        name: 'img',
-        filename: imagePath,
-        filepath: imagePath,
-        filetype: 'image/jpeg',
-      };
+        const file = {
+          name: 'img',
+          filename: imagePath,
+          filepath: imagePath,
+        };
 
-      files.push(file);
-    }),
-  );
+        files.push(file);
+      }),
+    );
+  } catch (err) {
+    console.log('<error creating file>', err);
+  }
 
+  const toUrl = `${baseURL}/oilSpotPhoto`;
   console.log(`<uploading images> ${spotId}`);
   RNFS.uploadFiles({
-    toUrl: `${baseURL}/oilSpotPhoto`,
+    toUrl,
     files,
     method: 'POST',
     headers: {
@@ -436,27 +442,39 @@ export const imageUploadHandler = async ({spotId, images = []}) => {
                   });
                 })
                 .catch(err => {
-                  console.info('<error>', err.message);
+                  if (err.response) {
+                    console.info(
+                      '<failed to update spot image data on realm>',
+                      spotId,
+                      err.response.data,
+                    );
+                  } else {
+                    console.info('<error>', err.message);
+                  }
                 });
             }
           })
           .catch(err => {
+            getRealm()
+              .then(realm => {
+                realm.write(() => {
+                  realm.create(
+                    'SyncScheduleImages',
+                    {
+                      spot_id: spotId,
+                      created_at: new Date(),
+                    },
+                    true,
+                  );
+                });
+              })
+              .catch(realmErr => console.log('<error>', realmErr));
             if (err.response) {
               console.info(
-                '<failed to update spot image data>',
+                '<failed to update spot image data to be>',
                 spotId,
                 err.response.data,
               );
-              getRealm()
-                .then(realm => {
-                  realm.write(() => {
-                    realm.create('SyncScheduleImages', {
-                      spot_id: spotId,
-                      created_at: new Date(),
-                    });
-                  });
-                })
-                .catch(realmErr => console.log('<error>', realmErr));
             } else {
               console.info('<error>', err.message);
             }
@@ -464,10 +482,24 @@ export const imageUploadHandler = async ({spotId, images = []}) => {
       }
     })
     .catch(err => {
+      getRealm()
+        .then(realm => {
+          realm.write(() => {
+            realm.create(
+              'SyncScheduleImages',
+              {
+                spot_id: spotId,
+                created_at: new Date(),
+              },
+              true,
+            );
+          });
+        })
+        .catch(realmErr => console.log('<error>', realmErr));
       if (err.response) {
         console.info('<failed to upload image>', spotId, err.response.data);
       } else {
-        console.info('<error>', err, err.message);
+        console.info('<error>', err);
       }
     });
 };

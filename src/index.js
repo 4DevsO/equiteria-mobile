@@ -37,6 +37,7 @@ const App = () => {
         if (isConnected) {
           const realm = await getRealm();
           const toSync = realm.objects('SyncSchedule');
+          console.log('<spot2Sync>', toSync);
 
           if (toSync.length) {
             toSync.map(spot2sync => {
@@ -112,6 +113,7 @@ const App = () => {
             });
           } else {
             const toSyncImg = realm.objects('SyncScheduleImages');
+            console.log('<image2Sync>', toSyncImg);
             if (toSyncImg.length) {
               toSyncImg.map(async image2sync => {
                 console.log(`<syncing images> ${image2sync.spot_id}`);
@@ -127,7 +129,7 @@ const App = () => {
                     images: spot.photos,
                   });
                   const syncedSpot = realm.objectForPrimaryKey(
-                    'SyncScheduleImage',
+                    'SyncScheduleImages',
                     spot.id,
                   );
                   realm.write(() => {
