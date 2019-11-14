@@ -1,9 +1,9 @@
 import React from 'react';
-import {Text, Linking} from 'react-native';
+import {Text, Linking, View, Image} from 'react-native';
 
 import {
   Container,
-  Image,
+  Avatar,
   Card,
   Links,
   Author,
@@ -13,13 +13,22 @@ import {
   Icon,
   Role,
 } from './styles';
-import {View} from 'react-native';
 
 const {staff} = require('~/assets/staff.js');
 
 export default function About() {
   return (
     <Container>
+      <View style={{flexDirection: 'row', marginBottom: 20}}>
+        <Image
+          source={require('../../assets/gallery/logo_uesc_brasao.png')}
+          style={{width: 90, height: 120}}
+        />
+        <Image
+          source={require('../../assets/gallery/logo_newnbcgib.png')}
+          style={{width: 200, height: 73, marginTop: 30}}
+        />
+      </View>
       <Text style={{paddingBottom: 20}}>
         Este aplicativo foi desenvolvido por:
       </Text>
@@ -29,7 +38,7 @@ export default function About() {
           <Author>{elem.author}</Author>
           <Divider />
           <CardContent>
-            <Image source={elem.avatar} />
+            <Avatar source={elem.avatar} />
             <View>
               <Role>{elem.role}</Role>
               <Links>

@@ -34,7 +34,7 @@ export const Role = styled.Text`
   margin-left: 10px;
 `;
 
-export const Image = styled.Image`
+export const Avatar = styled.Image`
   border-radius: 5;
   width: 90;
   height: 90;
