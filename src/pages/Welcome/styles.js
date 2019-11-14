@@ -25,6 +25,11 @@ export const Text = styled.Text`
   text-align: center;
 `;
 
+export const Link = styled.Text`
+  text-decoration: underline;
+  color: #5c7cf2;
+`;
+
 export const TextInput = styled(Input).attrs({
   containerStyle: {marginVertical: 10},
 })``;

@@ -67,10 +67,14 @@ export default function AddPhoneNumber({key, navigation}) {
         <AppName>
           Bem Vindo ao <BoldText>e-Quitéria</BoldText>
         </AppName>
-        <Text>Explica sobre necessidade de verificar a identidade....</Text>
+        <Text>
+          Para o envio dos registros nós precisamos que prossiga com sua conta
+          Google para podermos saber quem é você. Basta tocar no botão a baixo e
+          selecionar a conta.
+        </Text>
         <>
           <GoogleSigninButton
-            style={{width: '100%', height: 60}}
+            style={{width: '100%', height: 60, marginTop: 20}}
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Light}
             onPress={signIn}
