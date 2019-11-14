@@ -370,7 +370,7 @@ var uploadProgress = response => {
   var percentage = Math.floor(
     (response.totalBytesSent / response.totalBytesExpectedToSend) * 100,
   );
-  // console.log('<uploading image> ' + percentage + '% done...');
+  console.log('<uploading image> ' + percentage + '% done...');
 };
 
 export const imageUploadHandler = async ({spotId, images = []}) => {
