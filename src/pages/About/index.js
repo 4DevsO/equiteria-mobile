@@ -25,7 +25,7 @@ export default function About() {
       </Text>
 
       {staff.map(elem => (
-        <Card>
+        <Card key={elem.author}>
           <Author>{elem.author}</Author>
           <Divider />
           <CardContent>
