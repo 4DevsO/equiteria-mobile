@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert} from 'react-native';
+import {Alert, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import {Container, HeaderContainer, TextTitleBlack} from './styles';
@@ -113,11 +113,20 @@ export default class Main extends React.Component {
       <Container>
         <HeaderContainer>
           <TextTitleBlack>e-quitéria</TextTitleBlack>
-          <IconButton
-            name="exit-to-app"
-            onPress={this.handleLogout}
-            color="#000"
-          />
+          <View style={{flexDirection: 'row'}}>
+            <IconButton
+              name="infocirlceo"
+              type="antdesign"
+              onPress={() => navigation.navigate('About')}
+              color="#000"
+              style={{marginHorizontal: 25}}
+            />
+            <IconButton
+              name="exit-to-app"
+              onPress={this.handleLogout}
+              color="#000"
+            />
+          </View>
         </HeaderContainer>
         <List
           title="Seus registros"
