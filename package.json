@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "bundle-android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.6.2",
@@ -22,7 +23,6 @@
     "prop-types": "^15.7.2",
     "react": "16.9.0",
     "react-native": "0.61.2",
-    "react-native-create-bridge": "^2.0.1",
     "react-native-elements": "^1.2.6",
     "react-native-fs": "^2.16.1",
     "react-native-geolocation-service": "^3.1.0",
