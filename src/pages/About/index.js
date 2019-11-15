@@ -19,16 +19,6 @@ const {staff} = require('~/assets/staff.js');
 export default function About() {
   return (
     <Container>
-      <View style={{flexDirection: 'row', marginBottom: 20}}>
-        <Image
-          source={require('../../assets/gallery/logo_uesc_brasao.png')}
-          style={{width: 90, height: 120}}
-        />
-        <Image
-          source={require('../../assets/gallery/logo_newnbcgib.png')}
-          style={{width: 200, height: 73, marginTop: 30}}
-        />
-      </View>
       <Text style={{paddingBottom: 20}}>
         Este aplicativo foi desenvolvido por:
       </Text>
@@ -71,6 +61,16 @@ export default function About() {
           </CardContent>
         </Card>
       ))}
+      <View style={{flexDirection: 'row', marginBottom: 20}}>
+        <Image
+          source={require('../../assets/gallery/logo_uesc_brasao.png')}
+          style={{width: 90, height: 120}}
+        />
+        <Image
+          source={require('../../assets/gallery/logo_newnbcgib.png')}
+          style={{width: 200, height: 73, marginTop: 30}}
+        />
+      </View>
     </Container>
   );
 }
