@@ -1,17 +1,30 @@
 import styled from 'styled-components/native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-export const Container = styled.View`
+export const Container = styled(KeyboardAwareScrollView).attrs({
+  contentContainerStyle: {
+    alignItems: 'center',
+  },
+  enableOnAndroid: true,
+  extraHeight: 50,
+})`
   flex: 1;
-  margin: 40px 20px 0 20px;
-  align-items: center;
+  margin: 0 20px;
+`;
+
+export const BottomSpacer = styled.View`
+  height: 20px;
 `;
 
 export const PictureContainer = styled.View`
+  width: 100%;
   flex-direction: row;
+  justify-content: space-around;
+  margin: 20px 0;
 `;
 
 export const PickerContainer = styled.View`
-  flex: 1;
+  width: 100%;
   margin-left: 10px;
   justify-content: space-between;
 `;
@@ -27,10 +40,4 @@ export const DescriptionContainer = styled.View`
   margin-top: 20px;
   border-width: 2px;
   border-color: #eee;
-`;
-
-export const PhotoContainer = styled.Image`
-  width: 100px;
-  height: 100px;
-  border-radius: 4px;
 `;
