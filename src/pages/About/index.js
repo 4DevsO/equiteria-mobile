@@ -14,7 +14,10 @@ import {
   Role,
 } from './styles';
 
-const {staff} = require('~/assets/staff.js');
+import {staff} from './staff';
+
+import LogoUESC from '~/assets/gallery/logo_uesc_brasao.png';
+import LogoNBCGIB from '~/assets/gallery/logo_newnbcgib.png';
 
 export default function About() {
   return (
@@ -61,15 +64,19 @@ export default function About() {
           </CardContent>
         </Card>
       ))}
-      <View style={{flexDirection: 'row', marginBottom: 20}}>
+
+      <Text style={{paddingBottom: 20}}>Idealizado por:</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginBottom: 20,
+          alignItems: 'center',
+        }}>
         <Image
-          source={require('../../assets/gallery/logo_uesc_brasao.png')}
-          style={{width: 90, height: 120}}
+          source={LogoUESC}
+          style={{width: 90, height: 120, marginRight: 10}}
         />
-        <Image
-          source={require('../../assets/gallery/logo_newnbcgib.png')}
-          style={{width: 200, height: 73, marginTop: 30}}
-        />
+        <Image source={LogoNBCGIB} style={{width: 200, height: 73}} />
       </View>
     </Container>
   );

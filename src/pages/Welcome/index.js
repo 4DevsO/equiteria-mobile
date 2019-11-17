@@ -4,7 +4,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import ViewPager from '@react-native-community/viewpager';
 
 import PageIndicator from './PageIndicator';
-import {Page1, Page2, AddPhoneNumber} from './InstructionPages';
+import {Page1, Page2, AddPhoneNumber, HowWeWork} from './InstructionPages';
+
+import {Gradient} from './styles';
 
 export default function Welcome({navigation}) {
   const [activePage, setActivePage] = useState(0);
@@ -30,7 +32,7 @@ export default function Welcome({navigation}) {
   }, [firstRun, navigation]);
 
   return (
-    <>
+    <Gradient>
       {loading && (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator size={50} color="#0d9c60" />
@@ -43,13 +45,14 @@ export default function Welcome({navigation}) {
             initialPage={0}
             keyboardDismissMode="on-drag"
             onPageSelected={e => setActivePage(e.nativeEvent.position)}>
-            <Page1 key="1" />
-            <Page2 key="2" />
-            <AddPhoneNumber key="3" navigation={navigation} />
+            <Page1 key="page1" />
+            <Page2 key="page2" />
+            <HowWeWork key="howwework" />
+            <AddPhoneNumber key="login" navigation={navigation} />
           </ViewPager>
-          <PageIndicator size={3} active={activePage} />
+          <PageIndicator size={4} active={activePage} />
         </View>
       )}
-    </>
+    </Gradient>
   );
 }

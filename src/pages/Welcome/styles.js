@@ -1,5 +1,14 @@
 import styled from 'styled-components/native';
+import LinearGradient from 'react-native-linear-gradient';
 import {Input, Icon as EIcon} from 'react-native-elements';
+
+export const Gradient = styled(LinearGradient).attrs({
+  colors: ['#87ceeb', '#c2b280'],
+  start: {x: 0, y: 0},
+  end: {x: 0, y: 1},
+})`
+  flex: 1;
+`;
 
 export const Container = styled.SafeAreaView`
   flex: 1;
@@ -10,7 +19,7 @@ export const Container = styled.SafeAreaView`
 `;
 
 export const AppName = styled.Text`
-  color: #000;
+  color: #fff;
   font-size: 24px;
   margin: 80px 0;
 `;
@@ -19,15 +28,19 @@ export const BoldText = styled.Text`
   font-weight: bold;
 `;
 
+export const Bold = styled.Text`
+  font-weight: bold;
+`;
+
 export const Text = styled.Text`
-  color: #000;
+  color: #fff;
   font-size: 18px;
-  text-align: center;
+  text-align: justify;
 `;
 
 export const Link = styled.Text`
   text-decoration: underline;
-  color: #5c7cf2;
+  color: #000;
 `;
 
 export const TextInput = styled(Input).attrs({

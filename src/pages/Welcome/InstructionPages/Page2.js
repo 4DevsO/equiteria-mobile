@@ -1,20 +1,19 @@
 import React from 'react';
 
-import {Container, AppName, Text, BoldText} from '../styles';
+import {Container, AppName, Text, Bold} from '../styles';
 
 export default function Page2({key}) {
   return (
     <Container key={key}>
       <AppName>
-        Bem Vindo ao <BoldText>e-Quitéria</BoldText>
+        O nome <Bold>e-Quitéria</Bold>
       </AppName>
       <Text>
-        O nome deste app <BoldText>e-Quitéria</BoldText> é uma homenagem a{' '}
-        <BoldText>Maria Quitéria</BoldText>, baiana da região de Feira de
-        Santana, foi a primeira mulher em integrar o exército brasileiro,
-        tornando-se heroína da independência, um exemplo de dedicação e
-        patriotismo. Hoje, Quitéria se levanta novamente para nos ajudar a
-        combater os impactos da tragédia ambiental no litoral nordestino.
+        <Bold>Maria Quitéria</Bold> foi uma baiana, da região de Feira de
+        Santana, e a primeira mulher em integrar o exército brasileiro. Ela se
+        tornou uma heroína da independência e um exemplo de dedicação. Hoje,
+        Quitéria se levanta novamente para nos ajudar a combater os impactos da
+        tragédia ambiental em nosso litoral nordestino.
       </Text>
     </Container>
   );

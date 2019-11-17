@@ -70,7 +70,7 @@ export const Links = styled.View`
 `;
 
 export const SocialIcon = styled(EButton).attrs({
-  buttonStyle: {backgroundColor: '#0D9C60'},
+  buttonStyle: {backgroundColor: '#000'},
   containerStyle: {paddingHorizontal: 5},
 })``;
 
