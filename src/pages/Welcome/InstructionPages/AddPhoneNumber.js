@@ -1,5 +1,5 @@
-import React from 'react';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import React, {useState} from 'react';
+import {ActivityIndicator, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   GoogleSignin,
@@ -12,6 +12,8 @@ import {Container, AppName, Text, BoldText} from '../styles';
 import api from '~/services/api';
 
 export default function AddPhoneNumber({key, navigation}) {
+  const [loading, setLoading] = useState(false);
+
   const createUser = async userInfo => {
     const {
       user: {email, name},
@@ -43,6 +45,7 @@ export default function AddPhoneNumber({key, navigation}) {
   };
 
   const signIn = async () => {
+    setLoading(true);
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
@@ -58,29 +61,39 @@ export default function AddPhoneNumber({key, navigation}) {
       } else {
         console.log(error.code);
       }
+
+      setLoading(false);
     }
   };
 
   return (
-    <KeyboardAwareScrollView enableOnAndroid extraHeight={200}>
-      <Container key={key}>
-        <AppName>
-          Bem Vindo ao <BoldText>e-Quitéria</BoldText>
-        </AppName>
-        <Text>
-          Para o envio dos registros nós precisamos que prossiga com sua conta
-          Google para podermos saber quem é você. Basta tocar no botão a baixo e
-          selecionar a conta.
-        </Text>
-        <>
-          <GoogleSigninButton
-            style={{width: '100%', height: 60, marginTop: 20}}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Light}
-            onPress={signIn}
-          />
-        </>
-      </Container>
-    </KeyboardAwareScrollView>
+    <Container key={key}>
+      <AppName>
+        Ajude o <BoldText>e-Quitéria</BoldText>
+      </AppName>
+      <Text>
+        Para começar a nos ajudar basta se conectar com a sua conta do Google e
+        começar a fazer os registros.
+      </Text>
+      <GoogleSigninButton
+        style={{width: '100%', height: 60, marginTop: 40}}
+        size={GoogleSigninButton.Size.Wide}
+        color={GoogleSigninButton.Color.Light}
+        onPress={signIn}
+      />
+      {loading && (
+        <View
+          style={{
+            width: '65%',
+            height: 40,
+            marginTop: -50,
+            backgroundColor: '#fff',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator size={35} color="#000" />
+        </View>
+      )}
+    </Container>
   );
 }

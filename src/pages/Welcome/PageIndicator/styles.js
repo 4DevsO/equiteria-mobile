@@ -1,10 +1,10 @@
 import styled from 'styled-components/native';
 
 export const Dot = styled.View`
-  width: 14px;
-  height: 14px;
-  border-radius: 7px;
-  background-color: ${({active}) => (active ? '#0d9c60' : '#ddd')};
+  width: ${({active}) => (active ? 20 : 10)};
+  height: 10px;
+  border-radius: 5px;
+  background-color: ${({active}) => (active ? '#000' : '#ddd')};
   margin: 0 5px;
 `;
 

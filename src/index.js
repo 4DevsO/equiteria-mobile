@@ -164,8 +164,8 @@ const App = () => {
   return (
     <>
       <StatusBar
-        barStyle="light-content"
-        backgroundColor="#D8CBB7"
+        barStyle="dark-content"
+        backgroundColor="transparent"
         translucent
       />
       <Routes />
