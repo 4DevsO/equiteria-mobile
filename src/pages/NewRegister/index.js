@@ -28,11 +28,11 @@ import {
   PickerTitle,
   PickerContainer,
   DescriptionContainer,
-  PhotoContainer,
+  BottomSpacer,
 } from './styles';
 
-import IconButton from '~/components/IconButton';
 import Button from '~/components/Button';
+import PhotoPicker from './PhotoPicker';
 
 export const PickItens = [
   {
@@ -66,7 +66,8 @@ export default function NewRegister({navigation}) {
   const [selected, setSelected] = useState('oleo-praia');
   const [otherDescription, setOtherDescription] = useState('');
   const [description, setDescription] = useState('');
-  const [imageSource, setImageSource] = useState('');
+  const [imageSource, setImageSource] = useState(''); // Remove
+  const [imagesSrc, addImageSrc] = useState(['', '', '', '']);
   const [hasLocationPermission, setHasLocationPermission] = useState(true);
   const [currentLocation, setCurrentLocation] = useState(false);
   const [locationName, setLocationName] = useState('');
@@ -169,7 +170,7 @@ export default function NewRegister({navigation}) {
         collectDate: Date.now(),
         location: currentLocation,
         tag: selected,
-        photo: imageSource,
+        photos: imagesSrc,
         otherDescription,
         description,
         userId,
@@ -190,6 +191,12 @@ export default function NewRegister({navigation}) {
 
   const saveUserInfo = async infos => {
     try {
+      const photos = infos.photos
+        .filter(image => image !== '')
+        .map(image => ({
+          data: image.data,
+          synced: false,
+        }));
       const data = {
         id: uuid.v4(),
         user_id: infos.userId,
@@ -199,12 +206,7 @@ export default function NewRegister({navigation}) {
         tags: [infos.tag],
         description: infos.description,
         other_description: infos.otherDescription,
-        photos: [
-          {
-            data: infos.photo.data,
-            synced: false,
-          },
-        ],
+        photos,
       };
 
       const realm = await getRealm();
@@ -266,14 +268,17 @@ export default function NewRegister({navigation}) {
     }
   };
 
-  const handleImagePicker = () => {
+  const handleImagePicker = sourceIdx => {
     ImagePicker.openCamera({
       mediaType: 'photo',
       compressImageQuality: 0.7,
       includeBase64: true,
     })
       .then(image => {
-        setImageSource(image);
+        setImageSource(image); // Remove
+        const newSrcs = [...imagesSrc];
+        newSrcs[sourceIdx] = image;
+        addImageSrc([...newSrcs]);
       })
       .catch(e => console.log(e));
   };
@@ -285,39 +290,29 @@ export default function NewRegister({navigation}) {
   return (
     <Container>
       <PictureContainer>
-        {!!imageSource && !!imageSource.path && (
-          <TouchableWithoutFeedback onPress={handleImagePicker}>
-            <PhotoContainer
-              source={{
-                uri: imageSource.path,
-              }}
-            />
-          </TouchableWithoutFeedback>
-        )}
-        {!imageSource && !imageSource.path && (
-          <IconButton
-            name="add-a-photo"
-            size={60}
-            color="#999"
-            onPress={handleImagePicker}
-            style={{backgroundColor: '#eee', borderRadius: 4, padding: 20}}
+        {imagesSrc.map((image, idx) => (
+          <PhotoPicker
+            key={idx}
+            imageSource={image}
+            onPress={() => handleImagePicker(idx)}
           />
-        )}
-        <PickerContainer>
-          <PickerTitle>Tipo de Contaminação</PickerTitle>
-          <Item picker>
-            <Picker
-              mode="dropdown"
-              iosIcon={<Icon name="arrow-down" />}
-              selectedValue={selected}
-              onValueChange={(value, idx) => setSelected(value)}>
-              {PickItens.map(item => (
-                <Picker.Item {...item} key={item.value} />
-              ))}
-            </Picker>
-          </Item>
-        </PickerContainer>
+        ))}
       </PictureContainer>
+      <PickerContainer>
+        <PickerTitle>Selecione o tipo de contaminação</PickerTitle>
+        <Item picker>
+          <Picker
+            mode="dropdown"
+            placeholder="Tipo de Contaminação"
+            iosIcon={<Icon name="arrow-down" />}
+            selectedValue={selected}
+            onValueChange={value => setSelected(value)}>
+            {PickItens.map(item => (
+              <Picker.Item {...item} key={item.value} />
+            ))}
+          </Picker>
+        </Item>
+      </PickerContainer>
       {selected === 'outro' && (
         <DescriptionContainer>
           <Input
@@ -358,6 +353,7 @@ export default function NewRegister({navigation}) {
         onPress={handleSubmit}>
         Enviar
       </Button>
+      <BottomSpacer />
     </Container>
   );
 }
