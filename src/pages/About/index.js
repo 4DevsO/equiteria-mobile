@@ -14,7 +14,7 @@ import {
   Role,
 } from './styles';
 
-const {staff} = require('~/assets/staff.js');
+import {staff} from './staff';
 
 export default function About() {
   return (
