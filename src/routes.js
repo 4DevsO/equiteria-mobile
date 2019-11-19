@@ -16,7 +16,7 @@ const MainRoutes = createStackNavigator(
         backgroundColor: '#FFF',
         elevation: 0, // remove shadow on Android
         shadowOpacity: 0, // remove shadow on iOS
-        marginTop: 20,
+        marginTop: 10,
       },
       headerTintColor: '#000',
     },
