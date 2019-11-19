@@ -76,7 +76,7 @@ export default function About() {
           source={LogoUESC}
           style={{width: 90, height: 120, marginRight: 10}}
         />
-        <Image source={LogoNBCGIB} style={{width: 200, height: 73}} />
+        <Image source={LogoNBCGIB} style={{width: 140, height: 120}} />
       </View>
     </Container>
   );

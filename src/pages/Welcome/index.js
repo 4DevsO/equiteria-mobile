@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, ActivityIndicator} from 'react-native';
+import {View, ActivityIndicator, Image} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import ViewPager from '@react-native-community/viewpager';
 
@@ -7,6 +7,9 @@ import PageIndicator from './PageIndicator';
 import {Page1, Page2, AddPhoneNumber, HowWeWork} from './InstructionPages';
 
 import {Gradient} from './styles';
+
+import LogoUESC from '~/assets/gallery/logo_uesc_brasao.png';
+import LogoNBCGIB from '~/assets/gallery/logo_newnbcgib.png';
 
 export default function Welcome({navigation}) {
   const [activePage, setActivePage] = useState(0);
@@ -50,6 +53,19 @@ export default function Welcome({navigation}) {
             <HowWeWork key="howwework" />
             <AddPhoneNumber key="login" navigation={navigation} />
           </ViewPager>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Image
+              source={LogoUESC}
+              style={{width: 50, height: 70, marginRight: 10}}
+            />
+            <Image source={LogoNBCGIB} style={{width: 80, height: 70}} />
+          </View>
           <PageIndicator size={4} active={activePage} />
         </View>
       )}
