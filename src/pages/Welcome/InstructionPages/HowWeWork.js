@@ -26,11 +26,11 @@ export default function HowWeWork({key}) {
         <Bold>
           <Link
             onPress={() =>
-              Linking.openURL('http://equiteria.nbcgib.uesc.br').catch(e =>
+              Linking.openURL('http://nbcgib.uesc.br').catch(e =>
                 console.log('<error>', e),
               )
             }>
-            {'\n'}equiteria.nbcgib.uesc.br
+            {'\n'}nbcgib.uesc.br
           </Link>
         </Bold>
       </Text>
